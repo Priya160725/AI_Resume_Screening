@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 22px 40px;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: auto;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .new-btn {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .title {
+            margin-bottom: 25px;
+        }
+
+        .title h2 {
+            margin: 0 0 8px;
+        }
+
+        .title p {
+            color: #64748b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+
+        .stat-title {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .stat-value {
+            margin-top: 8px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 15px;
+            text-align: left;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        td {
+            padding: 15px;
+            border-top: 1px solid #eef2f7;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .category {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .good {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .average {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 260px;
+        }
+
+        .skill {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 5px 8px;
+            border-radius: 15px;
+            font-size: 11px;
+        }
+
+        .missing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .view-btn {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 9px 13px;
+            border-radius: 7px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .empty {
+            background: white;
+            padding: 50px;
+            text-align: center;
+            border-radius: 14px;
+        }
+
+        @media(max-width: 800px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <div class="header-inner">
+
+        <h1>
+            AI Resume Screening Dashboard
+        </h1>
+
+        <a
+            href="/"
+            class="new-btn"
+        >
+            + New Screening
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+    <div class="title">
+
+        <h2>
+            Candidate Dashboard
+        </h2>
+
+        <p>
+            Review screened candidates and their matching results.
+        </p>
+
+    </div>
+
+
+    {% if candidates %}
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-title">
+                Total Candidates
+            </div>
+
+            <div class="stat-value">
+                {{ candidates|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+                Good Matches
+            </div>
+
+            <div class="stat-value">
+
+                {% set good_count = 0 %}
+
+                {% for candidate in candidates %}
+
+                    {% if candidate.match_category == "Good Match" %}
+
+                        {% set good_count = good_count + 1 %}
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {{ good_count }}
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+                Job
+            </div>
+
+            <div class="stat-value">
+
+                {{ candidates[0].job_title }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Job</th>
+
+                    <th>Resume</th>
+
+                    <th>Score</th>
+
+                    <th>Category</th>
+
+                    <th>Matching Skills</th>
+
+                    <th>Missing Skills</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            {% for candidate in candidates %}
+
+            <tr>
+
+                <td>
+                    {{ candidate.id }}
+                </td>
+
+                <td>
+                    {{ candidate.job_title }}
+                </td>
+
+                <td>
+                    <strong>
+                        {{ candidate.filename }}
+                    </strong>
+                </td>
+
+                <td>
+
+                    <span class="score">
+                        {{ candidate.match_score }}%
+                    </span>
+
+                </td>
+
+                <td>
+
+                    {% if candidate.match_category == "Good Match" %}
+
+                        <span class="category good">
+                            Good Match
+                        </span>
+
+                    {% elif candidate.match_category == "Average Match" %}
+
+                        <span class="category average">
+                            Average Match
+                        </span>
+
+                    {% else %}
+
+                        <span class="category low">
+                            Low Match
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    <div class="skills">
+
+                        {% for skill in candidate.matching_skills %}
+
+                            <span class="skill">
+                                {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    <div class="skills">
+
+                        {% for skill in candidate.missing_skills %}
+
+                            <span class="skill missing">
+                                {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    <a
+                        href="/candidate/{{ candidate.id }}"
+                        class="view-btn"
+                    >
+                        View Details
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+
+    <div class="empty">
+
+        <h2>
+            No Candidates Found
+        </h2>
+
+        <p>
+            Upload resumes and screen them against a job description.
+        </p>
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Screening System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #d1d5db;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        textarea {
+
+            width: 100%;
+            padding: 13px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 180px;
+            resize: vertical;
+        }
+
+        .file-box {
+
+            border: 2px dashed #cbd5e1;
+
+            border-radius: 10px;
+
+            padding: 25px;
+
+            text-align: center;
+
+            background: #f8fafc;
+        }
+
+        input[type="file"] {
+            width: 100%;
+        }
+
+        .help {
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        button {
+
+            width: 100%;
+
+            border: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .dashboard {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dashboard a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        AI Resume Screening System
+    </h1>
+
+    <p>
+        AI-Powered Resume Screening and Candidate Ranking
+    </p>
+
+</div>
+
+
+<div class="container">
+
+
+    <div class="card">
+
+        <h2>
+            Screen Candidates
+        </h2>
+
+
+        <form
+            action="/screen"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+
+            <div class="form-group">
+
+                <label for="job_title">
+                    Job Title
+                </label>
+
+                <input
+                    type="text"
+                    id="job_title"
+                    name="job_title"
+                    placeholder="Example: Python Developer"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="job_description">
+                    Job Description
+                </label>
+
+                <textarea
+                    id="job_description"
+                    name="job_description"
+                    placeholder="Enter the job description and required skills..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="resumes">
+                    Upload Resumes
+                </label>
+
+
+                <div class="file-box">
+
+                    <input
+                        type="file"
+                        id="resumes"
+                        name="resumes"
+                        accept=".pdf"
+                        multiple
+                        required
+                    >
+
+                    <div class="help">
+                        Select one or more PDF resumes.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button type="submit">
+                Screen Resumes
+            </button>
+
+
+        </form>
+
+
+        <div class="dashboard">
+
+            <a href="/dashboard">
+                View Candidate Dashboard
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
