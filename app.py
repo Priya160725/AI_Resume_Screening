@@ -34,10 +34,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def get_connection():
 
     return mysql.connector.connect(
-        host=os.getenv("MYSQL_HOST", "localhost"),
-        user=os.getenv("MYSQL_USER", "root"),
+        host=os.getenv("MYSQL_HOST"),
+        user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
-        database=os.getenv("MYSQL_DATABASE", "resume_screening")
+        database=os.getenv("MYSQL_DATABASE")
     )
 
 
@@ -68,18 +68,16 @@ def screen_resumes():
         ""
     ).strip()
 
+
     if not job_title:
 
         return "Please enter a job title.", 400
+
 
     if not job_description:
 
         return "Please enter a job description.", 400
 
-
-    # ------------------------------------------------------
-    # GET MULTIPLE RESUMES
-    # ------------------------------------------------------
 
     files = request.files.getlist("resumes")
 
@@ -95,9 +93,9 @@ def screen_resumes():
         return "Please upload at least one PDF resume.", 400
 
 
-    # ------------------------------------------------------
+    # ======================================================
     # DATABASE CONNECTION
-    # ------------------------------------------------------
+    # ======================================================
 
     connection = get_connection()
 
@@ -109,278 +107,241 @@ def screen_resumes():
     results = []
 
 
-    try:
+    # ======================================================
+    # PROCESS EACH RESUME
+    # ======================================================
+
+    for file in files:
+
+        # --------------------------------------------------
+        # ONLY PDF FILES
+        # --------------------------------------------------
+
+        if not file.filename.lower().endswith(".pdf"):
+
+            continue
+
+
+        filename = file.filename
+
+
+        # --------------------------------------------------
+        # SAVE RESUME
+        # --------------------------------------------------
+
+        file_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+
+        file.save(file_path)
+
+
+        # --------------------------------------------------
+        # EXTRACT TEXT FROM PDF
+        # --------------------------------------------------
+
+        resume_text = extract_text_from_pdf(
+            file_path
+        )
+
+
+        # --------------------------------------------------
+        # CALCULATE MATCH
+        # --------------------------------------------------
+
+        match_result = calculate_match(
+            resume_text,
+            job_description
+        )
+
+
+        match_score = float(
+            match_result.get(
+                "match_score",
+                0
+            )
+        )
+
+
+        similarity_score = float(
+            match_result.get(
+                "similarity_score",
+                match_score
+            )
+        )
+
+
+        skill_score = float(
+            match_result.get(
+                "skill_score",
+                match_score
+            )
+        )
+
+
+        matching_skills = match_result.get(
+            "matching_skills",
+            []
+        )
+
+
+        missing_skills = match_result.get(
+            "missing_skills",
+            []
+        )
+
 
         # ==================================================
-        # PROCESS EACH RESUME
+        # CONVERT SKILLS TO LIST
         # ==================================================
 
-        for file in files:
+        if isinstance(
+            matching_skills,
+            str
+        ):
 
-            # --------------------------------------------------
-            # ONLY PDF FILES
-            # --------------------------------------------------
-
-            if not file.filename.lower().endswith(".pdf"):
-
-                continue
-
-
-            filename = file.filename
+            matching_skills = [
+                skill.strip()
+                for skill in matching_skills.split(",")
+                if skill.strip()
+            ]
 
 
-            # --------------------------------------------------
-            # SAVE RESUME
-            # --------------------------------------------------
+        if isinstance(
+            missing_skills,
+            str
+        ):
 
-            file_path = os.path.join(
-                app.config["UPLOAD_FOLDER"],
-                filename
-            )
-
-            file.save(file_path)
-
-
-            # --------------------------------------------------
-            # EXTRACT TEXT
-            # --------------------------------------------------
-
-            resume_text = extract_text_from_pdf(
-                file_path
-            )
+            missing_skills = [
+                skill.strip()
+                for skill in missing_skills.split(",")
+                if skill.strip()
+            ]
 
 
-            # --------------------------------------------------
-            # MATCHING
-            # --------------------------------------------------
+        # ==================================================
+        # MATCH CATEGORY
+        # ==================================================
 
-            match_result = calculate_match(
-                resume_text,
-                job_description
-            )
+        if match_score >= 70:
 
+            match_category = "Good Match"
 
-            # --------------------------------------------------
-            # GET SCORES
-            # --------------------------------------------------
+        elif match_score >= 40:
 
-            match_score = float(
-                match_result.get(
-                    "match_score",
-                    0
-                )
-            )
+            match_category = "Average Match"
+
+        else:
+
+            match_category = "Low Match"
 
 
-            similarity_score = float(
-                match_result.get(
-                    "similarity_score",
-                    match_score
-                )
-            )
+        # ==================================================
+        # DATABASE SKILL FORMAT
+        # ==================================================
+
+        matching_skills_db = ", ".join(
+            matching_skills
+        )
+
+        missing_skills_db = ", ".join(
+            missing_skills
+        )
 
 
-            skill_score = float(
-                match_result.get(
-                    "skill_score",
-                    match_score
-                )
-            )
+        # ==================================================
+        # INSERT CANDIDATE INTO DATABASE
+        # ==================================================
 
+        insert_query = """
 
-            # --------------------------------------------------
-            # GET SKILLS
-            # --------------------------------------------------
-
-            matching_skills = match_result.get(
-                "matching_skills",
-                []
-            )
-
-
-            missing_skills = match_result.get(
-                "missing_skills",
-                []
-            )
-
-
-            # --------------------------------------------------
-            # MAKE SURE MATCHING SKILLS ARE A LIST
-            # --------------------------------------------------
-
-            if isinstance(
+            INSERT INTO candidates
+            (
+                job_title,
+                filename,
+                match_score,
+                similarity_score,
+                skill_score,
+                match_category,
                 matching_skills,
-                str
-            ):
-
-                matching_skills = [
-                    skill.strip()
-                    for skill in matching_skills.split(",")
-                    if skill.strip()
-                ]
-
-
-            # --------------------------------------------------
-            # MAKE SURE MISSING SKILLS ARE A LIST
-            # --------------------------------------------------
-
-            if isinstance(
-                missing_skills,
-                str
-            ):
-
-                missing_skills = [
-                    skill.strip()
-                    for skill in missing_skills.split(",")
-                    if skill.strip()
-                ]
-
-
-            # --------------------------------------------------
-            # MATCH CATEGORY
-            # --------------------------------------------------
-
-            if match_score >= 70:
-
-                match_category = "Good Match"
-
-            elif match_score >= 40:
-
-                match_category = "Average Match"
-
-            else:
-
-                match_category = "Low Match"
-
-
-            # --------------------------------------------------
-            # CONVERT SKILLS TO DATABASE FORMAT
-            # --------------------------------------------------
-
-            matching_skills_db = ", ".join(
-                matching_skills
-            )
-
-            missing_skills_db = ", ".join(
                 missing_skills
             )
 
-
-            # --------------------------------------------------
-            # INSERT INTO DATABASE
-            # --------------------------------------------------
-
-            insert_query = """
-
-                INSERT INTO candidates
-                (
-                    job_title,
-                    filename,
-                    match_score,
-                    similarity_score,
-                    skill_score,
-                    match_category,
-                    matching_skills,
-                    missing_skills
-                )
-
-                VALUES
-                (
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s
-                )
-
-            """
-
-
-            cursor.execute(
-                insert_query,
-                (
-                    job_title,
-                    filename,
-                    match_score,
-                    similarity_score,
-                    skill_score,
-                    match_category,
-                    matching_skills_db,
-                    missing_skills_db
-                )
+            VALUES
+            (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s
             )
 
-
-            # --------------------------------------------------
-            # GET DATABASE ID
-            # --------------------------------------------------
-
-            candidate_id = cursor.lastrowid
+        """
 
 
-            # --------------------------------------------------
-            # ADD RESULT
-            # --------------------------------------------------
+        cursor.execute(
+            insert_query,
+            (
+                job_title,
+                filename,
+                match_score,
+                similarity_score,
+                skill_score,
+                match_category,
+                matching_skills_db,
+                missing_skills_db
+            )
+        )
 
-            results.append({
 
-                "id": candidate_id,
-
-                "job_title": job_title,
-
-                "filename": filename,
-
-                "match_score": match_score,
-
-                "similarity_score": similarity_score,
-
-                "skill_score": skill_score,
-
-                "match_category": match_category,
-
-                "matching_skills": matching_skills,
-
-                "missing_skills": missing_skills
-
-            })
+        candidate_id = cursor.lastrowid
 
 
         # ==================================================
-        # SAVE DATABASE CHANGES
+        # ADD RESULT
         # ==================================================
 
-        connection.commit()
+        results.append({
+
+            "id": candidate_id,
+
+            "job_title": job_title,
+
+            "filename": filename,
+
+            "match_score": match_score,
+
+            "similarity_score": similarity_score,
+
+            "skill_score": skill_score,
+
+            "match_category": match_category,
+
+            "matching_skills": matching_skills,
+
+            "missing_skills": missing_skills
+
+        })
 
 
-    except Exception:
+    # ======================================================
+    # SAVE DATABASE CHANGES
+    # ======================================================
 
-        connection.rollback()
+    connection.commit()
 
-        raise
+    cursor.close()
 
-
-    finally:
-
-        cursor.close()
-
-        connection.close()
+    connection.close()
 
 
-    # ------------------------------------------------------
-    # CHECK VALID PDF
-    # ------------------------------------------------------
-
-    if not results:
-
-        return "No valid PDF resumes were uploaded.", 400
-
-
-    # ------------------------------------------------------
+    # ======================================================
     # SHOW RESULTS
-    # ------------------------------------------------------
+    # ======================================================
 
     return render_template(
         "result.html",
@@ -403,44 +364,40 @@ def dashboard():
     )
 
 
-    try:
+    query = """
 
-        query = """
+        SELECT
+            id,
+            job_title,
+            filename,
+            match_score,
+            similarity_score,
+            skill_score,
+            match_category,
+            matching_skills,
+            missing_skills,
+            screened_at
 
-            SELECT
-                id,
-                job_title,
-                filename,
-                match_score,
-                similarity_score,
-                skill_score,
-                match_category,
-                matching_skills,
-                missing_skills,
-                screened_at
+        FROM candidates
 
-            FROM candidates
+        ORDER BY match_score DESC
 
-            ORDER BY match_score DESC
-
-        """
+    """
 
 
-        cursor.execute(query)
+    cursor.execute(query)
 
-        candidates = cursor.fetchall()
-
-
-    finally:
-
-        cursor.close()
-
-        connection.close()
+    candidates = cursor.fetchall()
 
 
-    # ------------------------------------------------------
+    cursor.close()
+
+    connection.close()
+
+
+    # ======================================================
     # CONVERT DATABASE SKILLS TO LISTS
-    # ------------------------------------------------------
+    # ======================================================
 
     for candidate in candidates:
 
@@ -453,20 +410,12 @@ def dashboard():
         )
 
 
-        # --------------------------------------------------
-        # MATCHING SKILLS
-        # --------------------------------------------------
-
         if matching:
 
             candidate["matching_skills"] = [
-
                 skill.strip()
-
                 for skill in matching.split(",")
-
                 if skill.strip()
-
             ]
 
         else:
@@ -474,30 +423,18 @@ def dashboard():
             candidate["matching_skills"] = []
 
 
-        # --------------------------------------------------
-        # MISSING SKILLS
-        # --------------------------------------------------
-
         if missing:
 
             candidate["missing_skills"] = [
-
                 skill.strip()
-
                 for skill in missing.split(",")
-
                 if skill.strip()
-
             ]
 
         else:
 
             candidate["missing_skills"] = []
 
-
-    # ------------------------------------------------------
-    # SHOW DASHBOARD
-    # ------------------------------------------------------
 
     return render_template(
         "dashboard.html",
@@ -519,57 +456,49 @@ def candidate_details(candidate_id):
     )
 
 
-    try:
+    query = """
 
-        query = """
+        SELECT
+            id,
+            job_title,
+            filename,
+            match_score,
+            similarity_score,
+            skill_score,
+            match_category,
+            matching_skills,
+            missing_skills,
+            screened_at
 
-            SELECT
-                id,
-                job_title,
-                filename,
-                match_score,
-                similarity_score,
-                skill_score,
-                match_category,
-                matching_skills,
-                missing_skills,
-                screened_at
+        FROM candidates
 
-            FROM candidates
+        WHERE id = %s
 
-            WHERE id = %s
-
-        """
+    """
 
 
-        cursor.execute(
-            query,
-            (candidate_id,)
-        )
+    cursor.execute(
+        query,
+        (candidate_id,)
+    )
 
 
-        candidate = cursor.fetchone()
+    candidate = cursor.fetchone()
 
 
-    finally:
+    cursor.close()
 
-        cursor.close()
+    connection.close()
 
-        connection.close()
-
-
-    # ------------------------------------------------------
-    # CANDIDATE NOT FOUND
-    # ------------------------------------------------------
 
     if candidate is None:
 
         return "Candidate not found.", 404
 
 
-    # ------------------------------------------------------
+    # ======================================================
     # MATCHING SKILLS
-    # ------------------------------------------------------
+    # ======================================================
 
     matching = candidate.get(
         "matching_skills"
@@ -579,13 +508,9 @@ def candidate_details(candidate_id):
     if matching:
 
         candidate["matching_skills"] = [
-
             skill.strip()
-
             for skill in matching.split(",")
-
             if skill.strip()
-
         ]
 
     else:
@@ -593,9 +518,9 @@ def candidate_details(candidate_id):
         candidate["matching_skills"] = []
 
 
-    # ------------------------------------------------------
+    # ======================================================
     # MISSING SKILLS
-    # ------------------------------------------------------
+    # ======================================================
 
     missing = candidate.get(
         "missing_skills"
@@ -605,23 +530,15 @@ def candidate_details(candidate_id):
     if missing:
 
         candidate["missing_skills"] = [
-
             skill.strip()
-
             for skill in missing.split(",")
-
             if skill.strip()
-
         ]
 
     else:
 
         candidate["missing_skills"] = []
 
-
-    # ------------------------------------------------------
-    # SHOW CANDIDATE DETAILS
-    # ------------------------------------------------------
 
     return render_template(
         "candidate.html",
@@ -630,7 +547,7 @@ def candidate_details(candidate_id):
 
 
 # ==========================================================
-# RUN FLASK
+# RUN FLASK APPLICATION
 # ==========================================================
 
 if __name__ == "__main__":
