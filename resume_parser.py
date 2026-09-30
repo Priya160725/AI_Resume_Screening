@@ -1,32 +1,40 @@
 import pymupdf
+import os
 
 
-def extract_text_from_pdf(file_path):
+def extract_resume_text(filepath):
 
     text = ""
 
-
-    try:
-
-        document = pymupdf.open(
-            file_path
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(
+            f"File not found: {filepath}"
         )
 
+    # PDF files
+    if filepath.lower().endswith(".pdf"):
+
+        document = pymupdf.open(filepath)
 
         for page in document:
-
             text += page.get_text()
-
 
         document.close()
 
+    # DOCX files
+    elif filepath.lower().endswith(".docx"):
 
-    except Exception as error:
+        from docx import Document
 
-        print(
-            "PDF extraction error:",
-            error
+        document = Document(filepath)
+
+        for paragraph in document.paragraphs:
+            text += paragraph.text + "\n"
+
+    else:
+
+        raise ValueError(
+            "Only PDF and DOCX files are supported."
         )
 
-
-    return text
+    return text.strip()

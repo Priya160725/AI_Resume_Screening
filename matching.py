@@ -1,25 +1,137 @@
+import re
+
 from sklearn.feature_extraction.text import TfidfVectorizer
+
 from sklearn.metrics.pairwise import cosine_similarity
 
-from skills import extract_skills
+
+# ==========================================================
+# SKILL LIST
+# ==========================================================
+
+SKILLS = [
+
+    "Python",
+    "Java",
+    "JavaScript",
+    "HTML",
+    "CSS",
+
+    "Flask",
+    "Django",
+
+    "SQL",
+    "MySQL",
+
+    "PostgreSQL",
+
+    "Machine Learning",
+    "Deep Learning",
+
+    "Natural Language Processing",
+    "NLP",
+
+    "NLTK",
+    "spaCy",
+
+    "Scikit-learn",
+
+    "Pandas",
+    "NumPy",
+
+    "TensorFlow",
+    "PyTorch",
+
+    "TF-IDF",
+
+    "Cosine Similarity",
+
+    "REST API",
+
+    "Git",
+    "GitHub",
+
+    "Docker",
+
+    "AWS",
+
+    "C++",
+    "C"
+
+]
 
 
-def calculate_match(resume_text, job_description):
+# ==========================================================
+# NORMALIZE TEXT
+# ==========================================================
 
-    # --------------------------------------------------
-    # SAFETY CHECK
-    # --------------------------------------------------
+def normalize_text(text):
 
-    if not resume_text:
-        resume_text = ""
+    if not text:
 
-    if not job_description:
-        job_description = ""
+        return ""
+
+    text = text.lower()
+
+    text = re.sub(
+        r"[^a-z0-9+#.\- ]",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
 
 
-    # --------------------------------------------------
-    # TF-IDF + COSINE SIMILARITY
-    # --------------------------------------------------
+# ==========================================================
+# FIND SKILLS
+# ==========================================================
+
+def find_skills(text):
+
+    normalized = normalize_text(text)
+
+    found = []
+
+
+    for skill in SKILLS:
+
+        skill_normalized = normalize_text(
+            skill
+        )
+
+
+        if skill_normalized in normalized:
+
+            found.append(skill)
+
+
+    return found
+
+
+# ==========================================================
+# CALCULATE MATCH
+# ==========================================================
+
+def calculate_match(
+    resume_text,
+    job_description
+):
+
+
+    resume_text = resume_text or ""
+
+    job_description = job_description or ""
+
+
+    # ------------------------------------------------------
+    # TF-IDF SIMILARITY
+    # ------------------------------------------------------
 
     try:
 
@@ -27,155 +139,124 @@ def calculate_match(resume_text, job_description):
             stop_words="english"
         )
 
-        vectors = vectorizer.fit_transform([
-            resume_text,
-            job_description
-        ])
+
+        vectors = vectorizer.fit_transform(
+
+            [
+                resume_text,
+                job_description
+            ]
+
+        )
+
 
         similarity = cosine_similarity(
+
             vectors[0:1],
+
             vectors[1:2]
+
         )[0][0]
 
-        similarity_score = similarity * 100
 
-    except Exception as error:
+        similarity_score = round(
+            similarity * 100,
+            2
+        )
 
-        print("Similarity error:", error)
+
+    except Exception:
 
         similarity_score = 0.0
 
 
-    # --------------------------------------------------
-    # EXTRACT SKILLS
-    # --------------------------------------------------
+    # ------------------------------------------------------
+    # SKILLS
+    # ------------------------------------------------------
 
-    resume_skills = extract_skills(
+    resume_skills = find_skills(
         resume_text
     )
 
-    job_skills = extract_skills(
+
+    job_skills = find_skills(
         job_description
     )
 
 
-    # --------------------------------------------------
-    # FIND MATCHING SKILLS
-    # --------------------------------------------------
+    matching_skills = [
 
-    matching_skills = []
+        skill
 
-    for job_skill in job_skills:
+        for skill in job_skills
 
-        for resume_skill in resume_skills:
+        if skill in resume_skills
 
-            if job_skill.lower() == resume_skill.lower():
-
-                matching_skills.append(
-                    job_skill
-                )
-
-                break
+    ]
 
 
-    # --------------------------------------------------
-    # FIND MISSING SKILLS
-    # --------------------------------------------------
+    missing_skills = [
 
-    missing_skills = []
+        skill
 
-    for job_skill in job_skills:
+        for skill in job_skills
 
-        found = False
+        if skill not in resume_skills
 
-        for resume_skill in resume_skills:
-
-            if job_skill.lower() == resume_skill.lower():
-
-                found = True
-
-                break
+    ]
 
 
-        if not found:
-
-            missing_skills.append(
-                job_skill
-            )
-
-
-    # --------------------------------------------------
+    # ------------------------------------------------------
     # SKILL SCORE
-    # --------------------------------------------------
+    # ------------------------------------------------------
 
     if len(job_skills) > 0:
 
-        skill_score = (
-            len(matching_skills)
-            / len(job_skills)
-        ) * 100
+        skill_score = round(
+
+            (
+                len(matching_skills)
+                /
+                len(job_skills)
+            )
+            * 100,
+
+            2
+
+        )
 
     else:
 
-        skill_score = 0.0
+        skill_score = similarity_score
 
 
-    # --------------------------------------------------
-    # FINAL MATCH SCORE
-    #
-    # 60% similarity
-    # 40% skills
-    # --------------------------------------------------
+    # ------------------------------------------------------
+    # FINAL SCORE
+    # ------------------------------------------------------
 
-    match_score = (
+    match_score = round(
 
-        similarity_score * 0.60
+        (
+            similarity_score * 0.5
+            +
+            skill_score * 0.5
+        ),
 
-        +
-
-        skill_score * 0.40
+        2
 
     )
 
-
-    # --------------------------------------------------
-    # LIMIT SCORE TO 0–100
-    # --------------------------------------------------
-
-    match_score = max(
-        0,
-        min(
-            match_score,
-            100
-        )
-    )
-
-
-    # --------------------------------------------------
-    # RETURN RESULTS
-    # --------------------------------------------------
 
     return {
 
-        "match_score": round(
-            match_score,
-            2
-        ),
+        "match_score": match_score,
 
-        "similarity_score": round(
-            similarity_score,
-            2
-        ),
+        "similarity_score": similarity_score,
 
-        "skill_score": round(
-            skill_score,
-            2
-        ),
+        "skill_score": skill_score,
 
-        "matching_skills":
-            matching_skills,
+        "matching_skills": matching_skills,
 
-        "missing_skills":
-            missing_skills
+        "missing_skills": missing_skills
 
     }
