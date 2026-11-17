@@ -6,3 +6,30 @@ __pycache__/
 uploads/
 *.db
 *.sqlite
+
+# Database backups
+*.sql
+
+# Old code backups
+*.bak
+*.save
+
+# Environment and secret files
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Local backup copies
+*_backup*.py
+app_final_backup.py
+
+# Large local upload-limit test file
+test_files/large_resume.txt
+
+# Local empty test artifact (filename has a trailing space)
+empty_resume.txt?
+
+# Python virtual environment
+.venv/

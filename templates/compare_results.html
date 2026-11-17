@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Candidate Comparison
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1250px;
+            margin: 35px auto;
+        }
+
+        .header,
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .header p {
+            color: #6b7280;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #2563eb;
+            font-size: 18px;
+        }
+
+        .best {
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .skills {
+            line-height: 1.7;
+        }
+
+        .summary {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 18px;
+            border-radius: 8px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                width: 95%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/compare" class="button">
+        ← Select Again
+    </a>
+
+    <div class="header">
+
+        <h1>
+            ⚖️ Candidate Comparison
+        </h1>
+
+        <p>
+            Candidates are ranked from highest to lowest
+            overall screening score.
+        </p>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Rank
+                        </th>
+
+                        <th>
+                            Candidate
+                        </th>
+
+                        <th>
+                            Overall Match
+                        </th>
+
+                        <th>
+                            Resume Similarity
+                        </th>
+
+                        <th>
+                            Skill Match
+                        </th>
+
+                        <th>
+                            Matching Skills
+                        </th>
+
+                        <th>
+                            Missing Skills
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for candidate in candidates %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                #{{ loop.index }}
+                            </strong>
+
+                            {% if loop.first %}
+
+                                <br><br>
+
+                                <span class="best">
+                                    BEST MATCH
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ candidate.filename }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="score">
+
+                                {{
+                                    "%.2f"|format(
+                                        candidate.overall_score|float
+                                    )
+                                }}%
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {{
+                                "%.2f"|format(
+                                    candidate.similarity_score|float
+                                )
+                            }}%
+
+                        </td>
+
+
+                        <td>
+
+                            {{
+                                "%.2f"|format(
+                                    candidate.skill_score|float
+                                )
+                            }}%
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="skills">
+
+                                {{ candidate.matching_skills or "None" }}
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="skills">
+
+                                {{ candidate.missing_skills or "None" }}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>
+            🏆 Recommendation
+        </h2>
+
+        {% if candidates %}
+
+            <div class="summary">
+
+                Based on the screening scores,
+                <strong>
+                    {{ candidates[0].filename }}
+                </strong>
+                is the highest-ranked candidate
+                among the selected candidates.
+
+                <br><br>
+
+                Overall Match:
+
+                <strong>
+                    {{
+                        "%.2f"|format(
+                            candidates[0].overall_score|float
+                        )
+                    }}%
+                </strong>
+
+                <br><br>
+
+                The recommendation is based on the
+                calculated resume similarity and
+                required skill matching scores.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <a href="/dashboard" class="button">
+        📊 Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+
+</html>

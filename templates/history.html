@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Screening History</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f5f7fb;
+
+            color: #1f2937;
+
+        }
+
+
+        .container {
+
+            width: 92%;
+
+            max-width: 1200px;
+
+            margin: 40px auto;
+
+        }
+
+
+        .header {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 14px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0, 0, 0, 0.08);
+
+        }
+
+
+        .header h1 {
+
+            margin-top: 0;
+
+        }
+
+
+        .header p {
+
+            color: #6b7280;
+
+        }
+
+
+        .actions {
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .button {
+
+            display: inline-block;
+
+            padding: 11px 18px;
+
+            background: #2563eb;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            margin-right: 10px;
+
+        }
+
+
+        .button:hover {
+
+            background: #1d4ed8;
+
+        }
+
+
+        .table-container {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0, 0, 0, 0.08);
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+
+        th {
+
+            background: #f3f4f6;
+
+            text-align: left;
+
+            padding: 14px;
+
+            font-size: 14px;
+
+        }
+
+
+        td {
+
+            padding: 14px;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            vertical-align: top;
+
+        }
+
+
+        tr:hover {
+
+            background: #f9fafb;
+
+        }
+
+
+        .score {
+
+            font-weight: bold;
+
+        }
+
+
+        .good {
+
+            color: #16a34a;
+
+        }
+
+
+        .average {
+
+            color: #d97706;
+
+        }
+
+
+        .low {
+
+            color: #dc2626;
+
+        }
+
+
+        .skills {
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .date {
+
+            white-space: nowrap;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+        }
+
+
+        .empty {
+
+            text-align: center;
+
+            padding: 40px;
+
+            color: #6b7280;
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .container {
+
+                width: 96%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <div class="header">
+
+        <h1>
+            📋 Screening History
+        </h1>
+
+        <p>
+            Previously screened candidates
+            stored in the MySQL database.
+        </p>
+
+    </div>
+
+
+    <div class="actions">
+
+        <a
+            href="/"
+            class="button"
+        >
+            ← Screen New Resumes
+        </a>
+
+    </div>
+
+
+    <div class="table-container">
+
+
+        {% if candidates %}
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Candidate
+                    </th>
+
+                    <th>
+                        Job Position
+                    </th>
+
+                    <th>
+                        Overall Match
+                    </th>
+
+                    <th>
+                        Similarity
+                    </th>
+
+                    <th>
+                        Skill Match
+                    </th>
+
+                    <th>
+                        Matching Skills
+                    </th>
+
+                    <th>
+                        Missing Skills
+                    </th>
+
+                    <th>
+                        Screened At
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            {% for candidate in candidates %}
+
+
+                <tr>
+
+
+                    <td>
+
+                        {{ loop.index }}
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            {{ candidate.filename }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        {{ candidate.job_title }}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if candidate.overall_score >= 60 %}
+
+                            <span class="score good">
+
+                                {{ "%.1f"|format(
+                                    candidate.overall_score
+                                ) }}%
+
+                            </span>
+
+
+                        {% elif candidate.overall_score >= 40 %}
+
+                            <span class="score average">
+
+                                {{ "%.1f"|format(
+                                    candidate.overall_score
+                                ) }}%
+
+                            </span>
+
+
+                        {% else %}
+
+                            <span class="score low">
+
+                                {{ "%.1f"|format(
+                                    candidate.overall_score
+                                ) }}%
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ "%.1f"|format(
+                            candidate.similarity_score
+                        ) }}%
+
+                    </td>
+
+
+                    <td>
+
+                        {{ "%.1f"|format(
+                            candidate.skill_score
+                        ) }}%
+
+                    </td>
+
+
+                    <td class="skills">
+
+                        {% if candidate.matching_skills %}
+
+                            {{ candidate.matching_skills }}
+
+                        {% else %}
+
+                            None
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td class="skills">
+
+                        {% if candidate.missing_skills %}
+
+                            {{ candidate.missing_skills }}
+
+                        {% else %}
+
+                            None
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td class="date">
+
+                        {{ candidate.screened_at }}
+
+                    </td>
+
+
+                </tr>
+
+
+            {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+
+        {% else %}
+
+
+            <div class="empty">
+
+                <h3>
+                    No screening history
+                </h3>
+
+                <p>
+                    Screen some resumes first.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

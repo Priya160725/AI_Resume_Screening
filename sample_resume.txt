@@ -1,0 +1,19 @@
+ALEX MORGAN
+Bengaluru, India
+
+CAREER OBJECTIVE
+Seeking an entry-level Data Analyst position.
+
+TECHNICAL SKILLS
+Python, SQL, Excel, Pandas, NumPy, Power BI, Matplotlib.
+
+PROJECTS
+Created a student performance analysis project using Python and Pandas.
+Performed data cleaning and visualization.
+Used SQL queries to retrieve and analyze data.
+
+EDUCATION
+Bachelor of Technology in Information Science and Engineering.
+
+SOFT SKILLS
+Communication, teamwork, analytical thinking and problem-solving.

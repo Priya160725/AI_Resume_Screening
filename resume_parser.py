@@ -38,3 +38,6 @@ def extract_resume_text(filepath):
         )
 
     return text.strip()
+
+def extract_text_from_file(filepath):
+    return extract_resume_text(filepath)

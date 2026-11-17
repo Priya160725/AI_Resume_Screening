@@ -2,9 +2,7 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Candidate Details</title>
@@ -13,115 +11,97 @@
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
         }
 
         body {
-            background: #f4f6fb;
-            color: #222;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            padding: 35px 8%;
-        }
-
-        .header h1 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            opacity: 0.9;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
         }
 
         .container {
-            width: 84%;
-            margin: 30px auto;
+            width: 92%;
+            max-width: 1000px;
+            margin: 40px auto;
         }
 
-        .back-btn {
+        .top {
+            margin-bottom: 20px;
+        }
+
+        .back-button {
             display: inline-block;
-            background: #4f46e5;
+            padding: 10px 18px;
+            background: #2563eb;
             color: white;
             text-decoration: none;
-            padding: 11px 18px;
             border-radius: 8px;
             font-weight: bold;
-            margin-bottom: 25px;
         }
 
-        .back-btn:hover {
-            background: #3730a3;
+        .back-button:hover {
+            background: #1d4ed8;
         }
 
-        .card {
+        .header {
             background: white;
-            padding: 25px;
-            border-radius: 14px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
-        .candidate-title {
-            display: flex;
-            align-items: center;
-            gap: 18px;
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            word-break: break-word;
         }
 
-        .avatar {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: #4f46e5;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 25px;
-            font-weight: bold;
+        .header p {
+            margin: 8px 0;
+            color: #6b7280;
         }
 
-        .candidate-title h2 {
-            font-size: 25px;
-            margin-bottom: 5px;
-        }
-
-        .candidate-title p {
-            color: #777;
-        }
-
-        .score-grid {
+        .scores {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 18px;
+            margin-bottom: 20px;
         }
 
         .score-card {
-            background: #f8f9ff;
-            padding: 22px;
-            border-radius: 12px;
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
-        .score-card h3 {
-            color: #777;
+        .score-title {
+            color: #6b7280;
             font-size: 14px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .score-card .number {
-            color: #4f46e5;
-            font-size: 28px;
+        .score {
+            font-size: 32px;
             font-weight: bold;
+            color: #2563eb;
         }
 
-        .section-title {
-            font-size: 20px;
-            margin-bottom: 18px;
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            font-size: 21px;
         }
 
         .skills {
@@ -131,15 +111,11 @@
         }
 
         .skill {
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .matched {
-            background: #dcfce7;
+            padding: 8px 13px;
+            background: #e8f5e9;
             color: #166534;
+            border-radius: 20px;
+            font-size: 14px;
         }
 
         .missing {
@@ -147,184 +123,218 @@
             color: #991b1b;
         }
 
+        .no-skills {
+            color: #6b7280;
+        }
+
+        .explanation {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.7;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1d4ed8;
+        }
+
         .summary {
             line-height: 1.7;
-            color: #555;
+            color: #4b5563;
         }
 
-        .recommendation {
-            padding: 18px;
+        .summary ul {
+            padding-left: 25px;
+        }
+
+        .summary li {
+            margin-bottom: 8px;
+        }
+
+        .score-explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9fafb;
             border-radius: 10px;
-            background: #eef2ff;
-            border-left: 5px solid #4f46e5;
+            line-height: 1.6;
+            color: #4b5563;
         }
 
-        .recommendation strong {
-            color: #4f46e5;
+        .back-links {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .secondary-button {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #374151;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .secondary-button:hover {
+            background: #1f2937;
         }
 
         @media (max-width: 700px) {
 
-            .container {
-                width: 94%;
-            }
-
-            .score-grid {
+            .scores {
                 grid-template-columns: 1fr;
             }
 
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .score {
+                font-size: 28px;
+            }
         }
 
     </style>
 
 </head>
 
-
 <body>
 
+<div class="container">
+
+    <!-- BACK BUTTON -->
+
+    <div class="top">
+
+        <a href="/" class="back-button">
+            ← Screen More Resumes
+        </a>
+
+    </div>
+
+
+    <!-- CANDIDATE HEADER -->
 
     <div class="header">
 
         <h1>
-            Candidate Details
+            {{ filename }}
         </h1>
 
         <p>
-            AI-powered resume screening analysis
+            <strong>Job Position:</strong>
+            {{ job_title }}
+        </p>
+
+        <p>
+            <strong>Candidate Rank:</strong>
+            #{{ candidate_id }}
         </p>
 
     </div>
 
 
-    <div class="container">
+    <!-- SCREENING SCORES -->
 
+    <div class="scores">
 
-        <a href="/" class="back-btn">
-            ← Back to Screening
-        </a>
+        <div class="score-card">
 
+            <div class="score-title">
+                Overall Match
+            </div>
 
-        <!-- CANDIDATE -->
-
-        <div class="card">
-
-            <div class="candidate-title">
-
-                <div class="avatar">
-                    C
-                </div>
-
-                <div>
-                    <h2>
-                      {{ filename }}
-                    </h2>
-                     <p>
-                        Job Position: {{ job_title }}
-                    </p>
-
-                    <p>
-                        Resume screening profile
-                    </p>
-
-                </div>
-
+            <div class="score">
+                {{ "%.2f"|format(overall_score|float) }}%
             </div>
 
         </div>
 
 
-        <!-- SCORES -->
+        <div class="score-card">
 
-        <div class="card">
+            <div class="score-title">
+                Resume Similarity
+            </div>
 
-            <h2 class="section-title">
-                Screening Scores
-            </h2>
-
-
-            <div class="score-grid">
-
-
-                <div class="score-card">
-
-                    <h3>
-                        Overall Match
-                    </h3>
-
-                    <div class="number">
-                        {{ overall_score }}%
-                    </div>
-
-                </div>
-
-
-                <div class="score-card">
-
-                    <h3>
-                        Resume Similarity
-                    </h3>
-
-                    <div class="number">
-                        {{ similarity_score }}%
-                    </div>
-
-                </div>
-
-
-                <div class="score-card">
-
-                    <h3>
-                        Skill Match
-                    </h3>
-
-                    <div class="number">
-                        {{ skill_score }}%
-                    </div>
-
-                </div>
-
-
+            <div class="score">
+                {{ "%.2f"|format(similarity_score|float) }}%
             </div>
 
         </div>
 
 
-        <!-- MATCHING SKILLS -->
+        <div class="score-card">
 
-        <div class="card">
+            <div class="score-title">
+                Skill Match
+            </div>
 
-            <h2 class="section-title">
-                ✓ Matching Skills
-            </h2>
+            <div class="score">
+                {{ "%.2f"|format(skill_score|float) }}%
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MATCHING SKILLS -->
+
+    <div class="section">
+
+        <h2>
+            ✓ Matching Skills
+        </h2>
+
+        {% if matching_skills %}
 
             <div class="skills">
 
                 {% for skill in matching_skills %}
 
-                    <span class="skill matched">
+                    <span class="skill">
                         {{ skill }}
-                    </span>
-
-                {% else %}
-
-                    <span class="skill matched">
-                        No matching skills
                     </span>
 
                 {% endfor %}
 
             </div>
 
-        </div>
+        {% else %}
+
+            <p class="no-skills">
+                No matching skills identified.
+            </p>
+
+        {% endif %}
+
+    </div>
 
 
-        <!-- MISSING SKILLS -->
+    <!-- MISSING SKILLS -->
 
-        <div class="card">
+    <div class="section">
 
-            <h2 class="section-title">
-                ✗ Missing Skills
-            </h2>
+        <h2>
+            ✗ Missing Skills
+        </h2>
+
+        {% if missing_skills %}
 
             <div class="skills">
 
@@ -334,68 +344,154 @@
                         {{ skill }}
                     </span>
 
-                {% else %}
-
-                    <span class="skill matched">
-                        No missing skills
-                    </span>
-
                 {% endfor %}
 
             </div>
 
+        {% else %}
+
+            <p class="no-skills">
+                No missing skills.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- AI EXPLANATION -->
+
+    <div class="section">
+
+        <h2>
+            🤖 AI Screening Explanation
+        </h2>
+
+        <div class="explanation">
+
+            <div class="explanation-title">
+                Why this candidate received this result
+            </div>
+
+            {% if explanation %}
+
+                <div>
+                    {{ explanation }}
+                </div>
+
+            {% else %}
+
+                <div>
+                    The system analyzed the candidate's resume
+                    using Natural Language Processing,
+                    resume similarity and skill matching.
+                </div>
+
+            {% endif %}
+
         </div>
 
+    </div>
 
-        <!-- SUMMARY -->
 
-        <div class="card">
+    <!-- SCORE EXPLANATION -->
 
-            <h2 class="section-title">
-                Screening Summary
-            </h2>
+    <div class="section">
 
-            <p class="summary">
+        <h2>
+            📊 Score Explanation
+        </h2>
 
-                The candidate resume was analyzed using
-                Natural Language Processing and machine
-                learning based similarity techniques.
+        <div class="score-explanation">
 
-                The system compared the candidate's resume
-                with the selected job description and
-                calculated resume similarity and skill
-                matching scores.
+            <p>
+                <strong>Overall Match:</strong>
+                This is the final score used to rank the candidate.
+            </p>
 
+            <p>
+                <strong>Resume Similarity:</strong>
+                This measures how similar the candidate's resume
+                content is to the job description.
+            </p>
+
+            <p>
+                <strong>Skill Match:</strong>
+                This measures how many required skills were found
+                in the candidate's resume.
             </p>
 
         </div>
 
+    </div>
 
-        <!-- RECOMMENDATION -->
 
-        <div class="card">
+    <!-- SCREENING SUMMARY -->
 
-            <div class="recommendation">
+    <div class="section">
 
-                <strong>
-                    AI Screening Result
-                </strong>
+        <h2>
+            Screening Summary
+        </h2>
 
-                <p style="margin-top: 8px;">
+        <div class="summary">
 
-                    This candidate has been analyzed based
-                    on the skills and content identified
-                    from the uploaded resume.
+            <p>
+                The candidate resume was analyzed using
+                Natural Language Processing and
+                machine-learning-based similarity techniques.
+            </p>
 
-                </p>
+            <p>
+                The system compared the candidate's resume
+                with the selected job description and calculated:
+            </p>
 
-            </div>
+            <ul>
+
+                <li>
+                    Resume similarity
+                </li>
+
+                <li>
+                    Required skill matching
+                </li>
+
+                <li>
+                    Overall candidate score
+                </li>
+
+            </ul>
+
+            <p>
+                The candidate was then ranked based on the
+                calculated overall screening score.
+            </p>
 
         </div>
 
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <div class="back-links">
+
+        <a href="/" class="back-button">
+            ← Screen More Resumes
+        </a>
+
+        <a href="/history" class="secondary-button">
+            📋 Screening History
+        </a>
+
+        <a href="/dashboard" class="secondary-button">
+            📊 Dashboard
+        </a>
 
     </div>
 
+</div>
 
 </body>
 
